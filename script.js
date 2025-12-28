@@ -52,6 +52,9 @@ function saveEntries() {
 }
 
 function loadEntries() {
+  // Clear editor to avoid duplicates from HTML + LocalStorage
+  editor.innerHTML = "";
+
   const saved = localStorage.getItem(STORAGE_KEY);
   if (!saved) return;
 
