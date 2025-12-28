@@ -105,12 +105,13 @@ editor.addEventListener("keydown", (e) => {
     const contentText = rest.length ? rest.join(":").trim() : text;
 
     createEntry(type, contentText);
-    editor.innerHTML = ""; // clear input after creating entry
+
+    editor.innerHTML = ""; // fully clear editor
+    placeCaretAtStart(editor);
 
     updateYearOptions();
     applyFilters();
     saveEntries();
-    placeCaretAtEnd(editor);
   }
 });
 
@@ -142,14 +143,19 @@ yearFilter.addEventListener("change", applyFilters);
 
 /* ---------- CARET ---------- */
 
-function placeCaretAtEnd(el) {
+function placeCaretAtStart(el) {
   const range = document.createRange();
   const sel = window.getSelection();
   range.selectNodeContents(el);
-  range.collapse(false);
+  range.collapse(true);
   sel.removeAllRanges();
   sel.addRange(range);
 }
+
+/* ---------- INIT ---------- */
+
+loadEntries();
+
 
 /* ---------- INIT ---------- */
 
