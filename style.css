@@ -71,6 +71,12 @@ h1 {
   text-decoration-color: #ccc;
 }
 
+#editor:empty:before {
+  content: attr(data-placeholder);
+  color: #999;
+  font-style: italic;
+}
+
 .content a:hover {
   text-decoration-color: #888;
 }
