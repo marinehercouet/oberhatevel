@@ -2,6 +2,8 @@ const editor = document.getElementById("editor");
 const mediaFilter = document.getElementById("mediaFilter");
 const yearFilter = document.getElementById("yearFilter");
 
+const STORAGE_KEY = "mediaLogEntries";
+
 /* Subtle typography variation */
 const fonts = [
   "system-ui",
@@ -30,7 +32,65 @@ function today() {
   return new Date().toISOString().slice(0, 10);
 }
 
-/* Create entry on Enter */
+/* ---------- STORAGE ---------- */
+
+function saveEntries() {
+  const entries = [...document.querySelectorAll(".entry")].map(entry => ({
+    type: entry.dataset.type,
+    year: entry.dataset.year,
+    icon: entry.querySelector(".icon").textContent,
+    content: entry.querySelector(".content").innerHTML,
+    date: entry.querySelector(".date").textContent,
+    style: {
+      fontFamily: entry.style.fontFamily,
+      fontSize: entry.style.fontSize,
+      fontWeight: entry.style.fontWeight
+    }
+  }));
+
+  localStorage.setItem(STORAGE_KEY, JSON.stringify(entries));
+}
+
+function loadEntries() {
+  const saved = localStorage.getItem(STORAGE_KEY);
+  if (!saved) return;
+
+  const entries = JSON.parse(saved);
+
+  entries.forEach(data => {
+    const entry = document.createElement("div");
+    entry.className = "entry";
+    entry.dataset.type = data.type;
+    entry.dataset.year = data.year;
+
+    entry.style.fontFamily = data.style.fontFamily;
+    entry.style.fontSize = data.style.fontSize;
+    entry.style.fontWeight = data.style.fontWeight;
+
+    const icon = document.createElement("span");
+    icon.className = "icon";
+    icon.textContent = data.icon;
+
+    const content = document.createElement("span");
+    content.className = "content";
+    content.innerHTML = data.content;
+
+    const date = document.createElement("span");
+    date.className = "date";
+    date.textContent = data.date;
+
+    entry.appendChild(icon);
+    entry.appendChild(content);
+    entry.appendChild(date);
+
+    editor.appendChild(entry);
+  });
+
+  updateYearOptions();
+}
+
+/* ---------- ENTRY CREATION ---------- */
+
 editor.addEventListener("keydown", (e) => {
   if (e.key === "Enter") {
     e.preventDefault();
@@ -72,11 +132,13 @@ editor.addEventListener("keydown", (e) => {
 
     updateYearOptions();
     applyFilters();
+    saveEntries();
     placeCaretAtEnd(editor);
   }
 });
 
-/* Update year filter dynamically */
+/* ---------- FILTERING ---------- */
+
 function updateYearOptions() {
   const years = new Set(
     [...document.querySelectorAll(".entry")].map(e => e.dataset.year)
@@ -92,7 +154,6 @@ function updateYearOptions() {
   });
 }
 
-/* Apply media + year filters */
 function applyFilters() {
   const mediaValue = mediaFilter.value;
   const yearValue = yearFilter.value;
@@ -111,7 +172,8 @@ function applyFilters() {
 mediaFilter.addEventListener("change", applyFilters);
 yearFilter.addEventListener("change", applyFilters);
 
-/* Caret helper */
+/* ---------- CARET ---------- */
+
 function placeCaretAtEnd(el) {
   const range = document.createRange();
   const sel = window.getSelection();
@@ -120,4 +182,8 @@ function placeCaretAtEnd(el) {
   sel.removeAllRanges();
   sel.addRange(range);
 }
+
+/* ---------- INIT ---------- */
+
+loadEntries();
 
