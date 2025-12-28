@@ -66,11 +66,15 @@ function loadEntries() {
 
 /* ---------- ENTRY CREATION ---------- */
 
-function createEntry(type, contentText, style = {}, dateText = today(), iconText = null, yearText = null) {
+function createEntry(type, contentText, style = {}, dateText = null, iconText = null, yearText = null) {
   const entry = document.createElement("div");
   entry.className = "entry";
+
+  // Use saved type/year/date if provided, else defaults
   entry.dataset.type = type || "unknown";
-  entry.dataset.year = yearText || dateText.slice(0, 4);
+  const todayDate = today();
+  entry.dataset.year = yearText || (dateText ? dateText.slice(0, 4) : todayDate.slice(0,4));
+  const finalDate = dateText || todayDate;
 
   entry.style.fontFamily = style.fontFamily || random(fonts);
   entry.style.fontSize = style.fontSize || random(sizes);
@@ -86,8 +90,9 @@ function createEntry(type, contentText, style = {}, dateText = today(), iconText
 
   const date = document.createElement("span");
   date.className = "date";
-  date.textContent = dateText;
+  date.textContent = finalDate;
 
+  // Delete button
   const deleteBtn = document.createElement("span");
   deleteBtn.className = "delete-btn";
   deleteBtn.textContent = "🗑";
@@ -180,7 +185,4 @@ function placeCaretAtEnd(el) {
 
 loadEntries();
 
-/* ---------- INIT ---------- */
-
-loadEntries();
 
