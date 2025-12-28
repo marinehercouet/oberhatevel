@@ -1,0 +1,38 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <title>Media Log</title>
+  <link rel="stylesheet" href="style.css" />
+</head>
+<body>
+
+  <h1>Media Log</h1>
+
+  <div id="filters">
+    <select id="mediaFilter">
+      <option value="all">All media</option>
+      <option value="movie">Movies</option>
+      <option value="book">Books</option>
+      <option value="podcast">Podcasts</option>
+      <option value="album">Albums</option>
+      <option value="exhibition">Exhibitions</option>
+    </select>
+
+    <select id="yearFilter">
+      <option value="all">All years</option>
+    </select>
+  </div>
+
+  <div
+    id="editor"
+    contenteditable="true"
+    spellcheck="false"
+  >
+    Type entries like:<br />
+    <em>movie: Stalker (1979)</em>
+  </div>
+
+  <script src="script.js"></script>
+</body>
+</html>

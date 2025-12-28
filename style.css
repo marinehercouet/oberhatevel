@@ -1,0 +1,76 @@
+/* Base page */
+body {
+  font-family: system-ui, -apple-system, BlinkMacSystemFont, sans-serif;
+  background: #f8f8f6;
+  padding: 40px;
+  color: #222;
+}
+
+/* Title */
+h1 {
+  font-weight: 400;
+  margin-bottom: 18px;
+}
+
+/* Filters */
+#filters {
+  display: flex;
+  gap: 12px;
+  margin-bottom: 16px;
+}
+
+#filters select {
+  font-size: 0.85em;
+  padding: 4px 8px;
+  border: 1px solid #ddd;
+  background: #fff;
+  color: #444;
+}
+
+/* Editor */
+#editor {
+  background: #fff;
+  border: 1px solid #ddd;
+  padding: 20px;
+  min-height: 320px;
+  line-height: 1.45;
+  outline: none;
+}
+
+/* Individual entry */
+.entry {
+  display: flex;
+  align-items: baseline;
+  gap: 10px;
+  margin-bottom: 6px;
+}
+
+/* Media icon */
+.icon {
+  width: 1.5em;
+  opacity: 0.6;
+  flex-shrink: 0;
+}
+
+/* Content text */
+.content {
+  flex: 1;
+}
+
+/* Date */
+.date {
+  font-size: 0.75em;
+  color: #999;
+  white-space: nowrap;
+}
+
+/* Future-proofing for links */
+.content a {
+  color: inherit;
+  text-decoration: underline;
+  text-decoration-color: #ccc;
+}
+
+.content a:hover {
+  text-decoration-color: #888;
+}
