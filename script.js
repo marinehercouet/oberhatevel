@@ -58,32 +58,7 @@ function loadEntries() {
   const entries = JSON.parse(saved);
 
   entries.forEach(data => {
-    const entry = document.createElement("div");
-    entry.className = "entry";
-    entry.dataset.type = data.type;
-    entry.dataset.year = data.year;
-
-    entry.style.fontFamily = data.style.fontFamily;
-    entry.style.fontSize = data.style.fontSize;
-    entry.style.fontWeight = data.style.fontWeight;
-
-    const icon = document.createElement("span");
-    icon.className = "icon";
-    icon.textContent = data.icon;
-
-    const content = document.createElement("span");
-    content.className = "content";
-    content.innerHTML = data.content;
-
-    const date = document.createElement("span");
-    date.className = "date";
-    date.textContent = data.date;
-
-    entry.appendChild(icon);
-    entry.appendChild(content);
-    entry.appendChild(date);
-
-    editor.appendChild(entry);
+    createEntry(data.type, data.content, data.style, data.date, data.icon, data.year);
   });
 
   updateYearOptions();
@@ -91,6 +66,49 @@ function loadEntries() {
 
 /* ---------- ENTRY CREATION ---------- */
 
+function createEntry(type, contentText, style = {}, dateText = today(), iconText = null, yearText = null) {
+  const entry = document.createElement("div");
+  entry.className = "entry";
+  entry.dataset.type = type || "unknown";
+  entry.dataset.year = yearText || dateText.slice(0, 4);
+
+  entry.style.fontFamily = style.fontFamily || random(fonts);
+  entry.style.fontSize = style.fontSize || random(sizes);
+  entry.style.fontWeight = style.fontWeight || random(weights);
+
+  const icon = document.createElement("span");
+  icon.className = "icon";
+  icon.textContent = iconText || mediaTypes[type] || "•";
+
+  const content = document.createElement("span");
+  content.className = "content";
+  content.innerHTML = contentText;
+
+  const date = document.createElement("span");
+  date.className = "date";
+  date.textContent = dateText;
+
+  const deleteBtn = document.createElement("span");
+  deleteBtn.className = "delete-btn";
+  deleteBtn.textContent = "🗑";
+  deleteBtn.title = "Delete this entry";
+  deleteBtn.style.cursor = "pointer";
+  deleteBtn.style.marginLeft = "8px";
+  deleteBtn.addEventListener("click", () => {
+    entry.remove();
+    saveEntries();
+    updateYearOptions();
+  });
+
+  entry.appendChild(icon);
+  entry.appendChild(content);
+  entry.appendChild(date);
+  entry.appendChild(deleteBtn);
+
+  editor.appendChild(entry);
+}
+
+/* Handle new entry on Enter */
 editor.addEventListener("keydown", (e) => {
   if (e.key === "Enter") {
     e.preventDefault();
@@ -103,32 +121,7 @@ editor.addEventListener("keydown", (e) => {
     const type = rawType.toLowerCase();
     const contentText = rest.length ? rest.join(":").trim() : text;
 
-    const entry = document.createElement("div");
-    entry.className = "entry";
-    entry.dataset.type = mediaTypes[type] ? type : "unknown";
-    entry.dataset.year = today().slice(0, 4);
-
-    entry.style.fontFamily = random(fonts);
-    entry.style.fontSize = random(sizes);
-    entry.style.fontWeight = random(weights);
-
-    const icon = document.createElement("span");
-    icon.className = "icon";
-    icon.textContent = mediaTypes[type] || "•";
-
-    const content = document.createElement("span");
-    content.className = "content";
-    content.textContent = contentText;
-
-    const date = document.createElement("span");
-    date.className = "date";
-    date.textContent = today();
-
-    entry.appendChild(icon);
-    entry.appendChild(content);
-    entry.appendChild(date);
-
-    editor.appendChild(entry);
+    createEntry(type, contentText);
 
     updateYearOptions();
     applyFilters();
@@ -182,6 +175,10 @@ function placeCaretAtEnd(el) {
   sel.removeAllRanges();
   sel.addRange(range);
 }
+
+/* ---------- INIT ---------- */
+
+loadEntries();
 
 /* ---------- INIT ---------- */
 
