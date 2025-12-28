@@ -154,9 +154,3 @@ function placeCaretAtEnd(el) {
 /* ---------- INIT ---------- */
 
 loadEntries();
-
-
-/* ---------- INIT ---------- */
-
-loadEntries();
-
