@@ -1,41 +1,25 @@
 const editor = document.getElementById("editor");
+const entriesContainer = document.getElementById("entries");
 const mediaFilter = document.getElementById("mediaFilter");
 const yearFilter = document.getElementById("yearFilter");
 
 const STORAGE_KEY = "mediaLogEntries";
 
 /* Subtle typography variation */
-const fonts = [
-  "system-ui",
-  "Georgia, serif",
-  "Inter, system-ui",
-  "Helvetica Neue, sans-serif"
-];
-
+const fonts = ["system-ui", "Georgia, serif", "Inter, system-ui", "Helvetica Neue, sans-serif"];
 const sizes = ["0.95em", "1em", "1.05em"];
 const weights = ["400", "450", "500"];
 
 /* Media types + icons */
-const mediaTypes = {
-  movie: "🎬",
-  book: "📚",
-  podcast: "🎧",
-  album: "💿",
-  exhibition: "🖼"
-};
+const mediaTypes = { movie: "🎬", book: "📚", podcast: "🎧", album: "💿", exhibition: "🖼" };
 
-function random(arr) {
-  return arr[Math.floor(Math.random() * arr.length)];
-}
-
-function today() {
-  return new Date().toISOString().slice(0, 10);
-}
+function random(arr) { return arr[Math.floor(Math.random() * arr.length)]; }
+function today() { return new Date().toISOString().slice(0, 10); }
 
 /* ---------- STORAGE ---------- */
 
 function saveEntries() {
-  const entries = [...document.querySelectorAll(".entry")].map(entry => ({
+  const entries = [...document.querySelectorAll("#entries .entry")].map(entry => ({
     type: entry.dataset.type,
     year: entry.dataset.year,
     icon: entry.querySelector(".icon").textContent,
@@ -47,23 +31,17 @@ function saveEntries() {
       fontWeight: entry.style.fontWeight
     }
   }));
-
   localStorage.setItem(STORAGE_KEY, JSON.stringify(entries));
 }
 
 function loadEntries() {
-  // Clear editor to avoid duplicates from HTML + LocalStorage
-  editor.innerHTML = "";
-
+  entriesContainer.innerHTML = ""; // Clear container before loading
   const saved = localStorage.getItem(STORAGE_KEY);
   if (!saved) return;
-
   const entries = JSON.parse(saved);
-
   entries.forEach(data => {
     createEntry(data.type, data.content, data.style, data.date, data.icon, data.year);
   });
-
   updateYearOptions();
 }
 
@@ -73,10 +51,9 @@ function createEntry(type, contentText, style = {}, dateText = null, iconText = 
   const entry = document.createElement("div");
   entry.className = "entry";
 
-  // Use saved type/year/date if provided, else defaults
   entry.dataset.type = type || "unknown";
   const todayDate = today();
-  entry.dataset.year = yearText || (dateText ? dateText.slice(0, 4) : todayDate.slice(0,4));
+  entry.dataset.year = yearText || (dateText ? dateText.slice(0, 4) : todayDate.slice(0, 4));
   const finalDate = dateText || todayDate;
 
   entry.style.fontFamily = style.fontFamily || random(fonts);
@@ -95,13 +72,10 @@ function createEntry(type, contentText, style = {}, dateText = null, iconText = 
   date.className = "date";
   date.textContent = finalDate;
 
-  // Delete button
   const deleteBtn = document.createElement("span");
   deleteBtn.className = "delete-btn";
   deleteBtn.textContent = "🗑";
   deleteBtn.title = "Delete this entry";
-  deleteBtn.style.cursor = "pointer";
-  deleteBtn.style.marginLeft = "8px";
   deleteBtn.addEventListener("click", () => {
     entry.remove();
     saveEntries();
@@ -113,14 +87,13 @@ function createEntry(type, contentText, style = {}, dateText = null, iconText = 
   entry.appendChild(date);
   entry.appendChild(deleteBtn);
 
-  editor.appendChild(entry);
+  entriesContainer.appendChild(entry);
 }
 
-/* Handle new entry on Enter */
+/* Handle Enter in editor */
 editor.addEventListener("keydown", (e) => {
   if (e.key === "Enter") {
     e.preventDefault();
-
     const text = editor.innerText.trim();
     editor.innerHTML = "";
     if (!text) return;
@@ -130,7 +103,6 @@ editor.addEventListener("keydown", (e) => {
     const contentText = rest.length ? rest.join(":").trim() : text;
 
     createEntry(type, contentText);
-
     updateYearOptions();
     applyFilters();
     saveEntries();
@@ -141,12 +113,8 @@ editor.addEventListener("keydown", (e) => {
 /* ---------- FILTERING ---------- */
 
 function updateYearOptions() {
-  const years = new Set(
-    [...document.querySelectorAll(".entry")].map(e => e.dataset.year)
-  );
-
+  const years = new Set([...document.querySelectorAll("#entries .entry")].map(e => e.dataset.year));
   yearFilter.innerHTML = `<option value="all">All years</option>`;
-
   [...years].sort((a, b) => b - a).forEach(year => {
     const option = document.createElement("option");
     option.value = year;
@@ -158,14 +126,9 @@ function updateYearOptions() {
 function applyFilters() {
   const mediaValue = mediaFilter.value;
   const yearValue = yearFilter.value;
-
-  document.querySelectorAll(".entry").forEach(entry => {
-    const matchesMedia =
-      mediaValue === "all" || entry.dataset.type === mediaValue;
-
-    const matchesYear =
-      yearValue === "all" || entry.dataset.year === yearValue;
-
+  document.querySelectorAll("#entries .entry").forEach(entry => {
+    const matchesMedia = mediaValue === "all" || entry.dataset.type === mediaValue;
+    const matchesYear = yearValue === "all" || entry.dataset.year === yearValue;
     entry.style.display = matchesMedia && matchesYear ? "flex" : "none";
   });
 }
@@ -187,5 +150,4 @@ function placeCaretAtEnd(el) {
 /* ---------- INIT ---------- */
 
 loadEntries();
-
 
